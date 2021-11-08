@@ -1,56 +1,67 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reviews</title>
-  </head>
-  <body>
-    <header>
-      <a href="/logout">Logout</a>
-    </header>
-    <div>
-      <h1>{{ user.first_name }}! welcome</h1>
-      <h2>Recent Reviews:</h2>
-      {% for review in recent_reviews %}
-      <p>{{review.user.first_name}} says: {{review.content}}</p>
-      <p>Rating: {{review.rating}} stars</p>
-      <p>Posted on: {{review.created_at}}</p>
-      <p>
-        {% if user in review.review_by.all %}
-        <a href="/reviews/{{ review.id }}/unlike">unLike</a
-        >{{review.review_by.count}} {% else %}
-        <a href="/reviews/{{ review.id }}/like">Like</a
-        >{{review.review_by.count}} {% endif %}
-      </p>
-      <p>
-        {% if review.user.id == request.session.user_id %}
-        <a href="/reviews/{{review.id}}/delete">Delete this review</a>
-      </p>
-      {% endif %} {% endfor %}
+{% extends 'base.html' %} {% load static %} 
+{% block title %}Cart{% endblock title %} 
+{% block main-content %}
+<div class="container my-5">
+  <div class="row">
+    <h1 class="text-center mb-5">Recent Review</h1>
+    <div class="col-sm-8">
+      <div class="card">
+        <div class="card-body">
+          <h3>Review</h3>
+          {% for review in recent_reviews %}
+          <div class="row">
+            <div class="col-sm-3 text-center align-self-center">
+              <p>{{review.user.name}} says: {{review.content}}</p>
+              <p>Rating: {{review.rating}} stars</p>
+              <p>Posted on: {{review.created_at}}</p>
+              <p>
+              {% if user in review.review_by.all %}
+                <a href="reviews/{{ review.id }}/unlike">unLike</a
+                  >{{review.review_by.count}} {% else %}
+                <a href="reviews/{{ review.id }}/like">Like</a
+                  >{{review.review_by.count}} {% endif %}
+              </p>
+              <p>
+              {% if review.user.id == request.session.user_id %}
+                <a href="reviews/{{review.id}}/delete">Delete this review</a>
+              </p>
+              {% endif %} 
+            </div>
+          </div>
+          <hr />
+          {% endfor %}
+        </div>
+      </div>
     </div>
-    <div>
-      <ul class="messages">
-        {% for message in messages %}
-        <li>{{message}}</li>
-        {% endfor %}
-      </ul>
-      <form action="/add_review" method="POST">
-        {% csrf_token %}
-        <label for="review">Add a review:</label>
-        <textarea name="review" rows="4" cols="50"></textarea><br />
-        <label for="rating">Rating:</label>
-        <select name="rating">
-          <option value="1">1</option>
-          <option value="2">2</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-          <option value="5">5</option>
-        </select>
-        <br />
-
-        <input type="submit" value="Submit Review" />
-      </form>
+    <div class="col-sm-4">
+      <div class="card">
+        <div class="card-body">
+          <h3>Add your Review</h3>
+          <form action="add_review" method="POST">
+            {% csrf_token %}
+            <label for="review">Add a review:</label>
+            <textarea name="review" rows="4" cols="40"></textarea><br />
+            <label for="rating">Rating:</label>
+            <select name="rating">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+            </select>
+            <hr>
+            <div>
+              <input type="submit" value="Submit Review" />
+            </div> 
+          </form>
+          {% if messages %}
+          {% for message in messages %}
+            <p {% if meassage.tags %} class= "alert alert-{{message.tags}} mb-5" {% endif %}>{{message}}</p>
+          {% endfor %}
+          {% endif%}
+        </div>
+      </div>
     </div>
-  </body>
-</html>
+  </div>
+</div>
+{% endblock main-content %}

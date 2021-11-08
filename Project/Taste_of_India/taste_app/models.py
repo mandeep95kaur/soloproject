@@ -1,107 +1,59 @@
 from django.db import models
 from datetime import datetime
 import re
-import bcrypt
-
-class UserManager(models.Manager):
-    def register_validator(self, postData):
-        errors = {}
-        # Length of the first name
-        if len(postData['first_name']) < 2:
-            errors['first_name'] = "First name must be at least two characters long"
-
-        # Length of the last name
-        if len(postData['last_name']) < 2:
-            errors['last_name'] = "Last name must be at least two characters long"
-
-        # Email matches format
-        email_regex = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
-        if len(postData['email']) == 0:
-            errors['email'] = "You must enter an email"
-        elif not email_regex.match(postData['email']):
-            errors['email'] = "Must be a valid email"
-
-        # Email is unique
-        current_users = User.objects.filter(email=postData['email'])
-        if len(current_users) > 0:
-            errors['duplicate'] = "That email is already in use"
-
-        #Address must be entered
-        if len(postData['address'])== 0:
-            errors['address'] = "You must enter address"
-
-        #City must be entered
-        if len(postData['city'])== 0:
-            errors['city'] = "You must enter city" 
-        
-        #state must be entered
-        if len(postData['state'])== 0:
-            errors['state'] = "You must enter state"
-
-        # Password was entered (less than 8)
-        if len(postData['password']) < 8:
-            errors['password'] = "Password must be at least 8 characers long"
-        if postData['password'] != postData['confirm_password']:
-            errors['mismatch'] = "Your passwords do not match"
-
-        return errors
-
-    def update_validator(self, postData):
-        errors = {}
-        # Length of the first name
-        if len(postData['first_name']) < 2:
-            errors['first_name'] = "First name must be at least two characters long"
-
-        # Length of the last name
-        if len(postData['last_name']) < 2:
-            errors['last_name'] = "Last name must be at least two characters long"
-
-        # Email matches format
-        email_regex = re.compile(r'^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$')
-        if len(postData['email']) == 0:
-            errors['email'] = "You must enter an email"
-        elif not email_regex.match(postData['email']):
-            errors['email'] = "Must be a valid email"
-        
-        #Address must be entered
-        if len(postData['address'])== 0:
-            errors['address'] = "You must enter address"
-
-        #City must be entered
-        if len(postData['city'])== 0:
-            errors['city'] = "You must enter city" 
-        
-        #state must be entered
-        if len(postData['state'])== 0:
-            errors['state'] = "You must enter state"
-        
-        return errors
+from django.contrib.auth.models import User
 
 
+CATEGORY_CHOICES = (
+    ('N', 'Non-veg'),
+    ('V', 'Vegetarian'),
+    ('D', 'Drinks')
+)
 
-    def login_validator(self, postData):
-        errors = {}
-        check = User.objects.filter(email=postData['login_email'])
-        if not check:
-            errors['login_email'] = "Email has not been registered."
-        else:
-            if not bcrypt.checkpw(postData['login_password'].encode(), check[0].password.encode()):
-                errors['login_email'] = "Email and password do not match."
-        return errors
+STATE_CHOICES =(
+    ('AL', 'Alabama'),
+    ('AK', 'Alaska'),
+    ('CA', 'California'),
+    ('FL', 'Florida'),
+    ('GA', 'Gorgia'),
+    ('IN', 'Indiana'),
+    ('IA', 'Iowa'),
+    ('NY', 'New York')
+)
 
 
-class User(models.Model):
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    email = models.EmailField(max_length=255)
-    password = models.CharField(max_length=255)
-    address = models.CharField(max_length=255)
+class Customer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
     city = models.CharField(max_length=255)
-    state = models.CharField(max_length=255)
-    created_at = models.DateField(auto_now_add=True)
-    updated_at = models.DateField(auto_now=True)
+    state = models.CharField(choices=STATE_CHOICES,max_length=50)
+    zipcode = models.IntegerField()
 
-    objects = UserManager()
+class Product(models.Model):
+    title = models.CharField(max_length=255)
+    price = models.FloatField()
+    description = models.TextField()
+    category = models.CharField(choices=CATEGORY_CHOICES,max_length=2)
+    image = models.ImageField(upload_to='productimg')
+
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+
+
+
+
+class OrderPlaced(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    ordered_date = models.DateTimeField(auto_now_add=True)
+    
+
+
 
 class ReviewManager(models.Manager):
 
