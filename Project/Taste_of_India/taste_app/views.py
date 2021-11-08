@@ -13,7 +13,7 @@ class ProductView(View):
         vegetarian = Product.objects.filter(category='V')
         Nonveg = Product.objects.filter(category='N')
         drinks = Product.objects.filter(category='D')
-        return render(request,'home.html',{'vegetarian': vegetarian, 'Nonveg': Nonveg, 'drinks': drinks})
+        return render(request,'home.html', {'vegetarian': vegetarian, 'Nonveg': Nonveg, 'drinks': drinks})
 
 
 class ProductDetailView(View):
