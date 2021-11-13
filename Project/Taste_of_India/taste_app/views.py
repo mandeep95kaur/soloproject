@@ -5,6 +5,8 @@ import bcrypt
 from django.views import View
 from .forms import CustomerRegistrationForm, CustomerProfileForm
 from django.contrib import messages
+from django.db.models import Q 
+from django.http import JsonResponse
 
 
 
@@ -115,48 +117,67 @@ class CustomerRegistrationView(View):
             form.save()
         return render(request,'customerregistration.html', {'form':form})
         
+def plus_cart(request):
+    if request.method == 'GET':
+        prod_id = request.GET['prod_id']
+        c= Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+        c.quantity+=1
+        c.save()
+        amount = 0.0
+        shipping_amount = 10.0
+        cart_product = [p for p in Cart.objects.all() if p.user == request.user]
+        for p in cart_product:
+            teampamount=(p.quantity * p.product.price)
+            amount += teampamount
+            totalamount = amount + shipping_amount
+
+        data = {
+            'quantity': c.quantity,
+            'amount': amount,
+            'totalamount':totalamount
+        }
+        return JsonResponse(data)
+
+def minus_cart(request):
+    if request.method == 'GET':
+        prod_id = request.GET['prod_id']
+        c= Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+        c.quantity-=1
+        c.save()
+        amount = 0.0
+        shipping_amount = 10.0
+        cart_product = [p for p in Cart.objects.all() if p.user == request.user]
+        for p in cart_product:
+            teampamount=(p.quantity * p.product.price)
+            amount += teampamount
+            totalamount = amount + shipping_amount
+
+        data = {
+            'quantity': c.quantity,
+            'amount': amount,
+            'totalamount':totalamount
+        }
+        return JsonResponse(data)
+
+def remove_cart(request):
+    if request.method == 'GET':
+        prod_id = request.GET['prod_id']
+        c= Cart.objects.get(Q(product=prod_id) & Q(user=request.user))
+        c.delete()
+        amount = 0.0
+        shipping_amount = 10.0
+        cart_product = [p for p in Cart.objects.all() if p.user == request.user]
+        for p in cart_product:
+            teampamount=(p.quantity * p.product.price)
+            amount += teampamount
+
+        data = {
+            'amount': amount,
+            'totalamount':amount + shipping_amount
+        }
+        return JsonResponse(data)
 
 
 
-def review(request):
-    context = {
-        'recent_reviews': Review.objects.order_by('created_at').reverse()[:3]
-    }
-    return render(request, "review.html", context)
-
-
-def create_review(request):
-    review_errors = Review.objects.basic_validator(request.POST)
-    if len(review_errors) > 0:
-        for k, v in review_errors.items():
-            messages.error(request, v)
-        return redirect('reviews')
-    else:
-        user = User.objects.get(id = request.session['user_id'])
-        Review.objects.create(content = request.POST['review'], rating = request.POST['rating'], user = user)
-        return redirect('reviews')
-
-def like_review(request, review_id):
-        review = Review.objects.get(id = review_id)
-        user = User.objects.get(id= request.session['user_id'])
-        liking_review = review.review_by
-        liking_review.add(user)
-        return redirect('reviews')
-
-def unlike_review(request, review_id):
-        review = Review.objects.get(id = review_id)
-        user = User.objects.get(id= request.session['user_id'])
-        liking_review = review.review_by
-        liking_review.remove(user)
-        return redirect('reviews')
-
-
-def delete_review(request, review_id):
-    review = Review.objects.get(id = review_id)
-    if review.user.id == request.session['user_id']:
-        review.delete()
-    else:
-        messages.error(request, "This isn't yours to delete.")
-    return redirect('reviews')
 
 

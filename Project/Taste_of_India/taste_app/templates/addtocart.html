@@ -39,7 +39,7 @@
                 <div class="d-flex justify-content-between">
                   <a
                     href="#"
-                    class="btn btn-sm btn-secondary mr-3"
+                    class="btn btn-sm btn-secondary mr-3 remove-cart"
                     pid="{{cart.product.id}}"
                     >Remove item
                   </a>
@@ -71,7 +71,7 @@
                 pb-0
               "
             >
-              Amount<span>$ {{ amount}}</span>
+              Amount<span>$ <span id="amount"> {{ amount}}</span> </span>
             </li>
             <li
               class="
@@ -96,7 +96,7 @@
               "
             >
               <div><strong>Total</strong><small>(With Tax)</small></div>
-              <span><strong></strong>$ {{totalamount}}</span>
+              <span><strong>$<strong id="totalamount"> {{totalamount}}</strong></strong></span>
             </li>
           </ul>
           <div class="d-grid">
