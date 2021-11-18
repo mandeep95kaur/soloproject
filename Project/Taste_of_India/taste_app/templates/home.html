@@ -1,4 +1,5 @@
-{% extends 'base.html' %} {% load static %} {% block title %}Home{% endblock title %}
+{% extends 'base.html' %} {% load static %} 
+{% block title %}Home{% endblock title %} 
 {% block main-content %}
 <!-- 1st Product Slider -->
 <div class="m-3">
@@ -9,11 +10,12 @@
     <a href="{% url 'product-detail' v.id %}" class="btn"
       ><div class="item">
         <img src="{{v.image.url}}" alt="" height="200px" width="200px" />
-        <br/>
+        <br />
         <span class="fw-bold">{{v.title}}</span>
-          
+
         <br /><span class="fs-5">$ {{v.price}}</span>
-      </div></a>
+      </div></a
+    >
     {%endfor%}
   </div>
 </div>
@@ -27,10 +29,12 @@
     {% for n in Nonveg %}
     <a href="{% url 'product-detail' n.id %}" class="btn"
       ><div class="item">
-        <img src="{{n.image.url}}" alt="" height="200px" width="200px"/><span class="fw-bold"
+        <img src="{{n.image.url}}" alt="" height="200px" width="200px" /><span
+          class="fw-bold"
           >{{n.title}}</span
         ><br /><span class="fs-5">$ {{n.price}}</span>
-      </div></a>
+      </div></a
+    >
     {%endfor%}
   </div>
 </div>
@@ -44,10 +48,12 @@
     {% for d in drinks %}
     <a href="{% url 'product-detail' d.id %}" class="btn"
       ><div class="item">
-        <img src="{{d.image.url}}" alt="" height="200px" width="200px"/><span class="fw-bold"
+        <img src="{{d.image.url}}" alt="" height="200px" width="200px" /><span
+          class="fw-bold"
           >{{d.title}}</span
         ><br /><span class="fs-5">$ {{d.price}}</span>
-      </div></a>
+      </div></a
+    >
     {%endfor%}
   </div>
 </div>

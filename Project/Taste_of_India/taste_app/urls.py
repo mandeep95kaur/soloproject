@@ -27,4 +27,8 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='/') , name='logout'),
     path('checkout/', views.checkout, name='checkout'),
     path('paymentdone/', views.payment_done, name='paymentdone'),
+    path('reviews/',views.show_review),
+    path('reviews/create',views.create_review),
+    path('reviews/<int:review_id>/like',views.like),
+    path('reviews/<int:review_id>/delete',views.delete),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

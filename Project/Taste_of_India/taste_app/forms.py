@@ -4,6 +4,7 @@ from django.contrib.auth import password_validation
 from django.contrib.auth.models import User
 from .models import Customer
 
+
 class CustomerRegistrationForm(UserCreationForm):
     username = forms.CharField(label='username', widget=forms.
     TextInput(attrs={'class':'form-control'}))
@@ -43,5 +44,3 @@ class CustomerProfileForm(forms.ModelForm):
         'state': forms.Select(attrs={'class':'form-control'}),
         'zipcode': forms.NumberInput(attrs={'class':'form-control'})}
 
-
-        

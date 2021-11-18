@@ -177,6 +177,35 @@ def remove_cart(request):
         }
         return JsonResponse(data)
 
+def show_review(request):
+    context = {
+        'recent_reviews': Review.objects.order_by('created_at').reverse()[:3]
+    }
+    return render(request,'review.html',context)
+
+def create_review(request):
+    user = request.user
+    review = Review.objects.create(
+        content = request.POST['content'],
+        rating = request.POST['rating'],
+        creater = user,
+    )
+    return redirect('/reviews')
+
+def like(request, review_id):
+        review = Review.objects.get(id=review_id)
+        user = request.user
+        liking_review = review.review_by
+        liking_review.add(user)
+        return redirect('/reviews')
+
+
+def delete(request, review_id):
+    review = Review.objects.get(id=review_id)
+    review.delete()
+
+    return redirect('/reviews')
+
 
 
 
